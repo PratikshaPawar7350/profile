@@ -266,7 +266,7 @@ function bufferToBase64(buffer) {
   
     try {
       // Define the SQL query to select profile data filtered by studentid
-      const sql = 'SELECT pid, fullname, standard, rollnumber, mobile, dob, email, profilephoto FROM profile WHERE student_id = ?';
+      const sql = 'SELECT pid, fullname, standard, rollnumber, mobile, dob, email, profilephoto,division FROM profile WHERE student_id = ?';
   
       // Execute the query with the studentid parameter using placeholders
       const results = await query(sql, [studentid]);
