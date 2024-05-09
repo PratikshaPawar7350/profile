@@ -285,6 +285,7 @@ function bufferToBase64(buffer) {
         mobile: profile.mobile,
         dob: profile.dob,
         email: profile.email,
+        division:profile.division,
         profilephoto: profile.profilephoto ? profile.profilephoto.toString('base64') : null
       };
   
