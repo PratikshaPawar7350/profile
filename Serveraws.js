@@ -83,9 +83,7 @@ function bufferToBase64(buffer) {
     }
   });
   
-  // Route to fetch chapters based on selected syllabus ID
-  // Route to fetch chapters based on selected syllabus name
-  // Route to fetch chapters based on selected syllabus name
+  
   app.get('/chapters', async (req, res) => {
       const { syllabusName } = req.query;
     
@@ -118,10 +116,46 @@ function bufferToBase64(buffer) {
       }
     });
     
+    app.get('/chaptercontaint', (req, res) => {
+      const chapterName = req.query.chapter_name;
+    
+      if (!chapterName) {
+        return res.status(400).json({ error: 'Chapter name is required' });
+      }
+    
+      const query = `
+        SELECT c.chapter_name, p.point_id, p.point_name, p.point_text, p.point_image
+        FROM Chapter c
+        JOIN Point p ON c.ch_id = p.ch_id
+        WHERE c.chapter_name = ?
+      `;
+    
+      db.query(query, [chapterName], (err, results) => {
+        if (err) {
+          console.error('Error executing MySQL query:', err);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+    
+        // Prepare response object with Base64-encoded image data
+        const chapterDetails = {
+          chapter_name: chapterName,
+          points: results.map(row => ({
+            point_id: row.point_id,
+            point_name: row.point_name,
+            point_text: row.point_text,
+            point_image: row.point_image ? bufferToBase64(row.point_image) : null      }))
+        };
+    
+        res.json(chapterDetails);
+      });
+    });
+    
+    // Function to encode image data to Base64
+    
     
   
     // Route to fetch sidebar items for a selected chapter name
-  app.get('/sidebaritems', async (req, res) => {
+ /* app.get('/sidebaritems', async (req, res) => {
       const { ChapterName } = req.query;
     
       if (!ChapterName) {
@@ -255,7 +289,7 @@ function bufferToBase64(buffer) {
   
   /////////////////////////////////////////////
   
-  
+  */
   app.get('/profile', async (req, res) => {
     const { studentid } = req.query;
   
@@ -298,58 +332,7 @@ function bufferToBase64(buffer) {
   });
 
 
-  app.get('/subject', (req, res) => {
-    const subjectId = req.params.id;
-
-    const sql = `SELECT subject.sub_id, subject.sub_name, chapter.ch_id, chapter.chapter_name, point.point_id, point.point_name, point.point_text FROM subject JOIN chapter ON subject.sub_id = chapter.sub_id LEFT JOIN point ON chapter.ch_id = point.ch_id ORDER BY chapter.ch_id, point.point_id`;
-  
-;
-
-    connection.query(sql, [subjectId], (err, results) => {
-        if (err) {
-            console.error('Error querying the database:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        if (results.length === 0) {
-            res.status(404).send('Subject not found');
-            return;
-        }
-
-        const subjectData = {
-            subject_name: results[0].subject_name,
-            chapters: []
-        };
-
-        const chaptersMap = new Map();
-
-        results.forEach(row => {
-            let chapter;
-
-            if (!chaptersMap.has(row.chapter_name)) {
-                chapter = {
-                    chapter_name: row.chapter_name,
-                    points: []
-                };
-                chaptersMap.set(row.chapter_name, chapter);
-            } else {
-                chapter = chaptersMap.get(row.chapter_name);
-            }
-
-            if (row.point_name) {
-                chapter.points.push({
-                    point_name: row.point_name,
-                    point_text: row.point_text
-                });
-            }
-        });
-
-        subjectData.chapters = Array.from(chaptersMap.values());
-
-        res.json(subjectData);
-    });
-});
+ 
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
