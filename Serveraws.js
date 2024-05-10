@@ -117,7 +117,7 @@ function bufferToBase64(buffer) {
     });
     
     app.get('/chaptercontaint', (req, res) => {
-      const chapterName = req.query.chapter_name;
+      const { chapterName } = req.query;
     
       if (!chapterName) {
         return res.status(400).json({ error: 'Chapter name is required' });
@@ -130,7 +130,8 @@ function bufferToBase64(buffer) {
         WHERE c.chapter_name = ?
       `;
     
-      db.query(query, [chapterName], (err, results) => {
+      // Execute the query using the pool
+      pool.query(query, [chapterName], (err, results) => {
         if (err) {
           console.error('Error executing MySQL query:', err);
           return res.status(500).json({ error: 'Internal server error' });
@@ -143,13 +144,13 @@ function bufferToBase64(buffer) {
             point_id: row.point_id,
             point_name: row.point_name,
             point_text: row.point_text,
-            point_image: row.point_image ? bufferToBase64(row.point_image) : null      }))
+            point_image: row.point_image ? bufferToBase64(row.point_image) : null
+          }))
         };
     
         res.json(chapterDetails);
       });
     });
-    
     // Function to encode image data to Base64
     
     
