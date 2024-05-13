@@ -124,10 +124,20 @@ function bufferToBase64(buffer) {
       }
     
       const query = `
-        SELECT c.chapter_name, p.point_id, p.point_name, p.point_text, p.point_image
-        FROM Chapter c
-        JOIN Point p ON c.ch_id = p.ch_id
-        WHERE c.chapter_name = ?
+        SELECT 
+          c.chapter_name,
+          p.point_id,
+          p.point_name,
+          p.point_text,
+          p.point_image,
+          v.videoname,
+          v.video
+        FROM 
+          Chapter c
+          JOIN Point p ON c.ch_id = p.ch_id
+          LEFT JOIN videos v ON p.point_id = v.point_id
+        WHERE 
+          c.chapter_name = ?;
       `;
     
       // Execute the query using the pool
@@ -137,14 +147,18 @@ function bufferToBase64(buffer) {
           return res.status(500).json({ error: 'Internal server error' });
         }
     
-        // Prepare response object with Base64-encoded image data
+        // Prepare response object with Base64-encoded video content
         const chapterDetails = {
           chapter_name: chapterName,
           points: results.map(row => ({
             point_id: row.point_id,
             point_name: row.point_name,
             point_text: row.point_text,
-            point_image: row.point_image ? bufferToBase64(row.point_image) : null
+            point_image: row.point_image ? bufferToBase64(row.point_image) : null,
+            videos: row.videoname ? {
+              videoname: row.videoname,
+              video: row.video ? row.video.toString('base64') : null
+            } : null
           }))
         };
     
