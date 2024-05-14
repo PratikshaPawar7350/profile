@@ -373,6 +373,41 @@ function bufferToBase64(buffer) {
     }
   });
   
+  app.get('/problem', (req, res) => {
+    const { chaptername } = req.query;
+  
+    if (!chaptername) {
+      return res.status(400).json({ error: 'Chaptername parameter is required' });
+    }
+  
+    const query = `
+      SELECT 
+        pr.id, 
+        pr.question, 
+        pr.option1, 
+        pr.option2, 
+        pr.option3, 
+        pr.option4 
+      FROM 
+        Problems pr
+      JOIN 
+        Chapter c ON pr.chapterid = c.ch_id
+      WHERE 
+        c.chapter_name = ?;
+    `;
+  
+    pool.query(query, [chaptername], (err, results) => {
+      if (err) {
+        console.error('Error executing MySQL query:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      res.json(results);
+    });
+  });
+
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
