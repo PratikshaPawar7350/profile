@@ -357,19 +357,22 @@ function bufferToBase64(buffer) {
       const sql = 'INSERT INTO Feedback (teacher_name, your_name, subject, explanation) VALUES (?, ?, ?, ?)';
       const values = [teacher_name, your_name, subject, explanation];
   
-      await query(sql, values); // Execute the insert query
+      // Execute the insert query
+      const result = await query(sql, values);
   
-      console.log('Feedback inserted successfully');
-      res.status(201).json({ message: 'Feedback added successfully' });
+      if (result.affectedRows > 0) {
+        console.log('Feedback inserted successfully');
+        res.status(201).json({ success: true, message: 'Feedback added successfully' });
+      } else {
+        console.log('No rows affected, feedback not inserted');
+        res.status(500).json({ success: false, error: 'Failed to insert feedback' });
+      }
     } catch (err) {
       console.error('Error inserting feedback:', err);
-      res.status(500).json({ error: 'Failed to insert feedback' });
+      res.status(500).json({ success: false, error: 'Failed to insert feedback' });
     }
   });
   
-  
- 
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
