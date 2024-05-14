@@ -346,7 +346,28 @@ function bufferToBase64(buffer) {
     }
   });
 
-
+  app.post('/feedback', async (req, res) => {
+    const { teacher_name, your_name, subject, explanation } = req.body;
+  
+    if (!teacher_name || !your_name || !subject || !explanation) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+  
+    try {
+      const sql = 'INSERT INTO Feedback (teacher_name, your_name, subject, explanation) VALUES (?, ?, ?, ?)';
+      const values = [teacher_name, your_name, subject, explanation];
+  
+      await query(sql, values); // Execute the insert query
+  
+      console.log('Feedback inserted successfully');
+      res.status(201).json({ message: 'Feedback added successfully' });
+    } catch (err) {
+      console.error('Error inserting feedback:', err);
+      res.status(500).json({ error: 'Failed to insert feedback' });
+    }
+  });
+  
+  
  
 
 app.listen(port, () => {
