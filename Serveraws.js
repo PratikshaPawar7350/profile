@@ -362,7 +362,7 @@ function bufferToBase64(buffer) {
   
       if (result.affectedRows > 0) {
         console.log('Feedback inserted successfully');
-        res.status(201).json({ success: true, message: 'Feedback added successfully' });
+        res.status(200).json({ success: true, message: 'Feedback added successfully' });
       } else {
         console.log('No rows affected, feedback not inserted');
         res.status(500).json({ success: false, error: 'Failed to insert feedback' });
