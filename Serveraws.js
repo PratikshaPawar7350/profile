@@ -383,11 +383,8 @@ function bufferToBase64(buffer) {
     const query = `
       SELECT 
         pr.id, 
-        pr.question, 
-        pr.option1, 
-        pr.option2, 
-        pr.option3, 
-        pr.option4 
+        pr.question
+        
       FROM 
         Problems pr
       JOIN 
