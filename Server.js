@@ -216,6 +216,29 @@ app.get('/introduction', async (req, res) => {
     res.status(500).json({ error: 'Error fetching data from the database', details: err.message });
   }
 });*/
+app.get('/dashboard', async (req, res) => {
+  try {
+    // Define the SQL query to select dashboard data
+    const sql = 'SELECT id, dtitle, dimage FROM dashboard';
+
+    // Execute the query
+    const results = await query(sql);
+
+    // Map the results to format the response data
+    const dashboardData = results.map(item => ({
+      id: item.id,
+      dtitle: item.dtitle,
+      dimage: bufferToBase64(item.dimage) // Convert image to base64
+    }));
+
+    // Return the dashboard data as JSON response
+    res.json(dashboardData);
+  } catch (err) {
+    console.error('Error fetching dashboard data:', err);
+    res.status(500).json({ error: 'Error fetching dashboard data' });
+  }
+});
+
 
 // Start the server
 app.listen(port, () => {
