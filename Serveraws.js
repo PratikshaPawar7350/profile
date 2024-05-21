@@ -424,7 +424,7 @@ function bufferToBase64(buffer) {
         JOIN 
           colleges.Subject s ON h.subject_id = s.subject_code_prefixed
         JOIN
-          teachers t ON h.teacher_code = t.teacher_code
+          MGVP.teacher t ON h.teacher_code = t.teacher_code
         WHERE 
           h.subject_id = 'S1';
       `;
