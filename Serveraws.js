@@ -403,7 +403,43 @@ function bufferToBase64(buffer) {
     });
   });
 
-
+  app.get('/api/homework', async (req, res) => {
+    try {
+      const sql = `
+        SELECT 
+          h.id,
+          h.homework_id,
+          h.subject_id,
+          h.sid,
+          h.date_of_submission,
+          h.teacher_code,
+          h.description,
+          h.image,
+          s.subject_name,
+          s.stand,
+          s.division,
+          t.tname AS teacher_name
+        FROM 
+          MGVP.homework h
+        JOIN 
+          colleges.Subject s ON h.subject_id = s.subject_code_prefixed
+        JOIN
+          teachers t ON h.teacher_code = t.teacher_code
+        WHERE 
+          h.subject_id = 'S1';
+      `;
+  
+      // Execute the SQL query
+      const results = await query(sql);
+  
+      // Send the fetched data as response
+      res.json(results);
+    } catch (err) {
+      console.error('Error executing SQL query:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
