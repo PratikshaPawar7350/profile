@@ -403,6 +403,8 @@ function bufferToBase64(buffer) {
     });
   });
 
+  
+  
   app.get('/api/homework', (req, res) => {
     const { subjectName } = req.query;
   
@@ -429,7 +431,7 @@ function bufferToBase64(buffer) {
       JOIN 
         colleges.Subject s ON h.subject_id = s.subject_code_prefixed
       JOIN
-      MGVP.teacher t ON h.teacher_code = t.teacher_code
+        MGVP.teacher t ON h.teacher_code = t.teacher_code
       WHERE 
         s.subject_name = ?;
     `;
@@ -438,14 +440,22 @@ function bufferToBase64(buffer) {
     pool.query(sql, [subjectName], (err, results) => {
       if (err) {
         console.error('Error executing SQL query:', err);
-        res.status(500).json({ error: 'Internal server error' });
-        return;
+        return res.status(500).json({ error: 'Internal server error' });
       }
   
+      // Convert the image field to Base64
+      const modifiedResults = results.map(row => {
+        if (row.image) {
+          row.image = row.image.toString('base64');
+        }
+        return row;
+      });
+  
       // Send the fetched data as response
-      res.json(results);
+      res.json(modifiedResults);
     });
   });
+  
   
   app.get('/dashboard', async (req, res) => {
     try {
