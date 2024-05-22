@@ -349,7 +349,8 @@ function bufferToBase64(buffer) {
   app.post('/feedback', async (req, res) => {
     const { teacher_name, your_name, subject, explanation } = req.body;
   
-    if (!teacher_name || !your_name || !subject || !explanation) {
+    // Check if any of the fields are empty
+    if (!teacher_name.trim() || !your_name.trim() || !subject.trim() || !explanation.trim()) {
       return res.status(400).json({ error: 'All fields are required' });
     }
   
@@ -372,6 +373,7 @@ function bufferToBase64(buffer) {
       res.status(500).json({ success: false, error: 'Failed to insert feedback' });
     }
   });
+
   
   app.get('/problem', (req, res) => {
     const { chaptername } = req.query;
