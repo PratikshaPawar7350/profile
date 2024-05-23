@@ -543,7 +543,7 @@ function bufferToBase64(buffer) {
         s.stud_dob, 
         s.mobile, 
         s.password, 
-        CONVERT(s.profile_img USING utf8) AS profile_img, 
+          TO_BASE64(s.profile_img) AS profile_img, 
         c.college_code
       FROM 
       ${collegeName}.Student s
